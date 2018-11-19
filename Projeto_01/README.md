@@ -1,4 +1,4 @@
-# 1.Projeto 01 de Fundamentos de Sistemas Operacionais
+# Projeto 01 de Fundamentos de Sistemas Operacionais
 
 O problema 01 deve ser compilado com a seguinte linha de comando:
 ``` markdown
