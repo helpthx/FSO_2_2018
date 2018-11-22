@@ -1,2 +1,3 @@
-# Fund_Sistemas_Operacionais-
-Fundamentos de Sistemas Operacionais - 2/2018
+# Fundamentos de Sistemas Operacionais - UnB - 201286 - Turma A 
+
+  Fundamentos de Sistemas Operacionais - 2/2018
