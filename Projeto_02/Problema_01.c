@@ -4,7 +4,7 @@ int main(int argc, char *argv[]){
 
 
 	if(argc < 2){
-		printf("Use: ./... addresses.txt\n");
+		printf("Deve ser usado: ./... addresses.txt\n");
 		return -1;
 	}
 
@@ -38,25 +38,26 @@ int main(int argc, char *argv[]){
 	do{
 		while(fscanf(fp,"%d",&read_value) != EOF){
 			memory_access_counter++;
-			printf("read value: %d\n",read_value);
+			printf("valor real: %d\n",read_value);
+			/*Aplicando as mascaras para separar os bits de offset e data*/
 			logical_addr = 0xFFFF & read_value;
 			page_number = (0xFF00 & logical_addr) >> 8;
 			offset = 0x00FF & logical_addr;
-			printf("\nlogical addr: %u \npage number: %u \noffset: %u\n",logical_addr,page_number,offset);
+			printf("\n addr logico: %u \nnumero da pagina: %u \noffset: %u\n",logical_addr,page_number,offset);
 			frame_number = verify_tlb(page_number);
-			printf("Frame number found: %u\n", frame_number);
+			printf("Numero do frame encontrado: %u\n", frame_number);
 			memory_position = frame_number*256 + offset;
-			printf("Memory position found: %u\n", memory_position);
+			printf("Posição da memoria encontrada: %u\n", memory_position);
 			data_read = read_physical_memory(memory_position);
-			printf("Data read: %u\n", data_read);
+			printf("Dados lido: %u\n", data_read);
 			printf("\n");
 		}
 
 		error_page_rate = page_error/(memory_access_counter*1.0);
 		tlb_success_rate = tlb_success/(memory_access_counter*1.0);
-
-		printf("Error page rate: %.2lf\n", error_page_rate*100);
-		printf("Tlb success rate: %.2lf\n", tlb_success_rate*100);
+		/*Estatisticas de miss table*/
+		printf("Taxa de erro de pagina: %.2lf\n", error_page_rate*100);
+		printf("Taxa de sucesso TLB: %.2lf\n", tlb_success_rate*100);
 		fclose(fp);
 		fclose(bfptr);
 		return 0;
