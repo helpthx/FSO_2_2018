@@ -11,7 +11,7 @@ unsigned int page_error = 0;
 unsigned int tlb_success = 0;
 unsigned int memory_access_counter = 0;
 
-FILE *bfptr; //backing store memory file pointer
+FILE *bfptr; //Criando o ponteiro para o arquivo do Problema_01.c
 
 uint8_t read_physical_memory(uint16_t memory_position){
 
@@ -35,17 +35,17 @@ int is_initialized(void){
 
 void update_tlb(uint8_t page_number, uint8_t frame_number){
 
-	/*Initializing the tlb*/
+	/*Iniciando a TLB*/
 	if((frame_number == 0) && (last_updated_in_tlb == 0)){
 		tlb_page_number[0] = page_number;
 		tlb_frame_number[0] = frame_number;
-		printf("TLB updated: Position %u \nPage Number: %u \nFrame Number: %u\n", last_updated_in_tlb, tlb_page_number[0], tlb_frame_number[0]);
+		printf("Atualização da TLB: Posição %u \nNumero da pagina: %u \nNumero do frame: %u\n", last_updated_in_tlb, tlb_page_number[0], tlb_frame_number[0]);
 		last_updated_in_tlb++;
 	}
 	else{
 		tlb_page_number[last_updated_in_tlb] = page_number;
 		tlb_frame_number[last_updated_in_tlb] = frame_number;
-		printf("TLB updated: Position %u \nPage Number: %u \nFrame Number: %u\n", last_updated_in_tlb, tlb_page_number[last_updated_in_tlb], tlb_frame_number[last_updated_in_tlb]);
+		printf("Atualização da TLB: Posição %u \nNumero da pagina: %u \nNumero do frame: %u\n", last_updated_in_tlb, tlb_page_number[last_updated_in_tlb], tlb_frame_number[last_updated_in_tlb]);
 		last_updated_in_tlb = (last_updated_in_tlb + 1) % 16;
 	}
 
@@ -68,47 +68,48 @@ uint8_t verify_page_table(uint8_t page_number){
 
 	for(i = 0; i < 256; i++){
 		
-		/*There's no frame used. We have to initialize the page table*/
+		/*Não existe um frame. Deve-se inicar a tabela de pagina*/
 		if((i == page_number) && (number_frames_used == 0)){
-			printf("Page not initialized in memory yet. Page error generated.\n");
+			printf("Pagina não iniciada na memoria. Gerador de erro de pagina.\n");
 			
-			printf("Updating physical memory with the new frame...\n");
+			printf("Atualizando a memoria fisica com um novo frame...\n");
 			update_physical_memory(page_number, number_frames_used);
 			printf("Updated.\n");
-			//printf("The page table was not initialized and will be initialized.\n");
+			
 			page_table[i] = number_frames_used;
 			number_frames_used++;
 
-			/*update the tlb*/
-			printf("Updating the tlb with the new page number...\n");
+			/*Atualizando a TLB*/
+			printf("Atualizando a TLB com um novo numero de pagina...\n");
 			
 			update_tlb(page_number,page_table[i]);
 			
-			printf("Done.\n");
+			printf("Feito.\n");
 			return page_table[i];	
 		}
-		/*There's no frame for the page we're searching now*/
+		
+		/*Não existe o frame da pagina que foi procurada*/
 		else if(i == page_number && (page_table[i] == 0)){
 			page_error++;
-			printf("Page not initialized in memory yet. Page error generated.\n");
+			printf("Pagina não iniciada na memoria. Gerador de erro de pagina.\n");
 			//printf("There's a frame free and the page table will be updated.\n");
-			printf("Updating physical memory with the new frame...\n");
+			printf("Atualizando a memoria fisica com um novo frame...\n");
 			update_physical_memory(page_number, number_frames_used);
-			printf("Updated.\n");
+			printf("Atualizado.\n");
 			page_table[i] = number_frames_used;
 			number_frames_used++;
 			
-			printf("Updating the tlb with the new page number...\n");
+			printf("Atualizando a TLB com um novo numero de pagina...\n");
 			update_tlb(page_number,page_table[i]);
-			printf("Done.\n");
+			printf("Feito.\n");
 			return page_table[i];
 		}
-		/*There's already a frame for the page we're searching*/
+		/*Ja tem o frame para a pagina que foi procurada*/
 		else if(i == page_number){
-			printf("Page found in memory.\n");
-			printf("Updating the tlb with the new page number...\n");
+			printf("Pagina encontrada na memoria.\n");
+			printf("Atualizando a TLB com um novo numero de pagina...\n");
 			update_tlb(page_number,page_table[i]);
-			printf("Done.\n");
+			printf("Feito.\n");
 			return page_table[i];
 		}
 	}
@@ -118,19 +119,19 @@ uint8_t verify_tlb(uint8_t page_number){
 
 	uint8_t i;
 
-	printf("Verifying for page number in TLB...\n");
+	printf("Verificando o numero da pagina na TLB...\n");
 
 	if(is_initialized() == 1){
 		for(i = 0; i < 16; i++){
 
 			if(tlb_page_number[i] == page_number){
 				tlb_success++;
-				printf("Found frame %u in TLB.\n",tlb_frame_number[i]);
+				printf("Frame encontrado %u na TLB.\n",tlb_frame_number[i]);
 				return tlb_frame_number[i];
 			}
 		}
 	}
-	printf("Page number not found in TLB.\n");
-	printf("Opening the page table...\n");
+	printf("Numero da pagina não encontrado na TLB.\n");
+	printf("Abrindo a tabela de pagina...\n");
 	return verify_page_table(page_number);
 }
